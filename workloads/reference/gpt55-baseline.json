@@ -1,10 +1,10 @@
 {
-  "name": "gpt4o-baseline",
-  "description": "Reference baseline for GPT-4o performance metrics",
+  "name": "gpt55-baseline",
+  "description": "Reference baseline for GPT-5.5 performance metrics",
   "category": "reference",
   "iterations": 20,
   "provider": "openai",
-  "model": "gpt-4o",
+  "model": "gpt-5.5",
   "systemPrompt": "You are a helpful assistant.",
   "messages": [
     { "role": "user", "content": "Explain the concept of recursion in programming with examples." }
@@ -13,8 +13,8 @@
   "expectedMetrics": {
     "inputTokens": 25,
     "outputTokens": 500,
-    "latencyMs": 2000,
-    "costPer1MInput": 5.0,
-    "costPer1MOutput": 15.0
+    "latencyMs": 1800,
+    "costPer1MInput": 1.75,
+    "costPer1MOutput": 14.0
   }
 }
