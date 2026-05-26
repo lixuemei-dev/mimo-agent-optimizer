@@ -71,10 +71,9 @@ node scripts/compare.js results/run-a.json results/run-b.json
 
 1. **Profile** — Execute reference workloads against your current agent configuration. Collect token counts (input/output/reasoning), latency percentiles (p50/p95/p99), tool call frequency, and per-session cost estimates.
 
-2. **Analyze** — Identify bottlenecks through three analyzers:
+2. **Analyze** — Identify bottlenecks through two analyzers:
    - **Bottleneck Analyzer**: Finds the slowest steps in your agent pipeline (which tool calls stall, where context assembly bleeds tokens)
    - **Token Waste Detector**: Spots redundant context, oversized system prompts, and unnecessary reasoning overhead
-   - **Cost Hot-spot Mapper**: Maps cost-per-step to find where your budget is actually going
 
 3. **Optimize** — Apply one or more optimization strategies to the agent configuration. Each strategy produces a modified config with specific changes documented.
 
@@ -126,97 +125,17 @@ Manages API spend through model selection and budget enforcement.
 | **balanced** | Best trade-off | 100K tokens/session | 10s p95 | General-purpose agent tasks, production default |
 | **conservative** | Maximum quality | 200K tokens/session | 30s p95 | Complex reasoning, long-context analysis, code generation |
 
-### Custom Profiles
-
-Create your own profile by defining thresholds:
-
-```json
-{
-  "name": "my-profile",
-  "tokenBudget": 150000,
-  "maxLatencyMs": 15000,
-  "costCapPerSession": 0.50,
-  "strategies": ["token-budget", "latency"],
-  "modelRouting": {
-    "simple": "gpt-5.5-mini",
-    "complex": "mimo-v2.5-pro"
-  }
-}
-```
-
 ---
 
 ## Adapters
 
-The optimizer ships with adapters for five major LLM providers:
+The optimizer ships with adapters for three major LLM providers:
 
-| Adapter | Model Family | Streaming | Function Calling | Pricing Reference |
-|---------|-------------|-----------|-----------------|-------------------|
-| **MiMo** | Xiaomi MiMo-V2.5-Pro / V2.5 | ✅ | ✅ | Token Plan credits |
-| **OpenAI** | GPT-5.5 / GPT-5.5-mini | ✅ | ✅ | $1.75/$14 per 1M tokens |
-| **Anthropic** | Claude Sonnet 4.6 / Opus 4.7 | ✅ | ✅ | $3-5/$15-25 per 1M tokens |
-| **Google** | Gemini 3.1 Pro | ✅ | ✅ | $1.50/$12 per 1M tokens |
-| **Alibaba** | Qwen 3 Coder 32B | ✅ | ✅ | $0.30/$1.50 per 1M tokens |
-
-### Adding Custom Adapters
-
-```javascript
-const { BaseAdapter } = require('./src/adapters/base');
-
-class MyCustomAdapter extends BaseAdapter {
-  constructor(opts) {
-    super(opts);
-    this.name = 'my-provider';
-  }
-
-  normalizeConfig(config) {
-    // Convert internal config to your provider's API format
-    return { /* ... */ };
-  }
-
-  calculateCost(inputTokens, outputTokens) {
-    // Return cost in USD
-    return inputTokens * this.inputRate + outputTokens * this.outputRate;
-  }
-}
-```
-
----
-
-## Workloads
-
-The optimizer includes pre-built workloads for testing:
-
-### Stress Tests (`workloads/stress/`)
-Push the agent to its limits:
-- **heavy-agent.json** — 50+ turn conversation with accumulated context
-- **multi-tool.json** — 20+ tool calls per turn, parallel dispatch
-
-### Realistic Scenarios (`workloads/realistic/`)
-Based on actual production patterns:
-- **coding-session.json** — Multi-file code generation with debugging loops
-- **research-task.json** — Web search, summarization, and citation chain
-
-### Reference Baselines (`workloads/reference/`)
-Pre-configured comparison targets:
-- **gpt4o-baseline.json** — GPT-5.5 reference results
-- **claude35-baseline.json** — Claude Sonnet 4.6 reference results
-
-### Custom Workloads
-
-```json
-{
-  "name": "my-workload",
-  "turns": 20,
-  "toolsPerTurn": 5,
-  "contextSize": 16000,
-  "prompts": [
-    "Analyze this codebase and suggest improvements",
-    "Write unit tests for the auth module",
-    "Debug the failing CI pipeline"
-  ]
-}
-```
+| Adapter | Model Family | Streaming | Function Calling |
+|---------|-------------|-----------|-----------------|
+| **MiMo** | Xiaomi MiMo-V2.5-Pro / V2.5 | ✅ | ✅ |
+| **OpenAI** | GPT-5.5 / GPT-5.5-mini | ✅ | ✅ |
+| **Anthropic** | Claude Sonnet 4.6 / Opus 4.7 | ✅ | ✅ |
 
 ---
 
@@ -226,7 +145,6 @@ Pre-configured comparison targets:
 |----------|-----------------|-------------|
 | **Bottleneck Analyzer** | Where time is spent in the pipeline | Per-step latency, slowest tool calls, context assembly time |
 | **Token Waste Detector** | Redundant or oversized content | System prompt ratio, context bloat %, reasoning overhead |
-| **Cost Hot-spot Mapper** | Where money is spent | Cost per tool call, cost per turn, model tier utilization |
 
 ---
 
@@ -249,6 +167,25 @@ Default weights (configurable in `scoring/weights.json`):
 
 ---
 
+## Workloads
+
+### Stress Tests (`workloads/stress/`)
+Push the agent to its limits:
+- **heavy-agent.json** — 50+ turn conversation with accumulated context
+- **multi-tool.json** — 20+ tool calls per turn, parallel dispatch
+
+### Realistic Scenarios (`workloads/realistic/`)
+Based on actual production patterns:
+- **coding-session.json** — Multi-file code generation with debugging loops
+- **research-task.json** — Web search, summarization, and citation chain
+
+### Reference Baselines (`workloads/reference/`)
+Pre-configured comparison targets:
+- **gpt55-baseline.json** — GPT-5.5 reference results
+- **claude46-baseline.json** — Claude Sonnet 4.6 reference results
+
+---
+
 ## Token Consumption
 
 Based on typical agent workloads:
@@ -260,8 +197,6 @@ Based on typical agent workloads:
 | **Total** | **100K–200K** | **1B–1.5B** |
 
 The optimization pipeline itself consumes tokens during profiling and validation (typically 2-3x per workload run). With weekly optimization cycles across multiple agent configurations, total monthly consumption reaches 1-1.5B tokens.
-
-Optimized configurations target a **35% reduction** in total token consumption without measurable quality degradation.
 
 ---
 
@@ -292,27 +227,6 @@ The included workflow runs:
 - **On PR**: Smoke test (profile + analyze, no optimization) — fast feedback
 - **Nightly**: Full optimization pipeline with comparison against previous run
 - **On tag**: Full suite + HTML report generation
-
-### Programmatic Usage
-
-```javascript
-const { Optimizer } = require('./src/core/optimizer');
-
-const optimizer = new Optimizer({
-  adapter: 'mimo',
-  model: 'MiMo-V2.5-Pro',
-  profile: 'balanced',
-  strategies: ['token-budget', 'cost'],
-});
-
-const result = await optimizer.run({
-  workloads: ['coding-session', 'research-task'],
-});
-
-console.log(`Score: ${result.compositeScore}`);
-console.log(`Tokens saved: ${result.tokensSaved}`);
-console.log(`Cost reduced: $${result.costSaved}`);
-```
 
 ---
 
@@ -345,8 +259,8 @@ mimo-agent-optimizer/
 ├── src/
 │   ├── core/           # Optimizer, profiler, benchmark, reporter
 │   ├── strategies/     # Token budget, latency, cost strategies
-│   ├── adapters/       # MiMo, OpenAI, Anthropic, Google, Qwen
-│   ├── analyzers/      # Bottleneck, recommendation engines
+│   ├── adapters/       # MiMo, OpenAI, Anthropic
+│   ├── analyzers/      # Bottleneck, token waste detection
 │   └── reporters/      # Console, JSON, HTML output
 ├── configs/            # Pre-built optimization profiles
 ├── workloads/          # Stress, realistic, and reference tests
@@ -356,16 +270,6 @@ mimo-agent-optimizer/
 ├── docs/               # Project demo page
 └── results/            # Optimization run outputs
 ```
-
----
-
-## Roadmap
-
-- [ ] v1.1: Web UI for optimization results visualization
-- [ ] v1.2: Multi-model parallel comparison mode
-- [ ] v1.3: Cost prediction engine (estimate monthly spend before running)
-- [ ] v1.4: Plugin system for custom strategies and analyzers
-- [ ] v2.0: Continuous optimization daemon (auto-tune on schedule)
 
 ---
 
