@@ -88,9 +88,11 @@ The optimizer ships with adapters for three major LLM providers:
 
 | Adapter | Model Family | Streaming | Function Calling |
 |---|---|---|---|
-| **MiMo** | Xiaomi MiMo-v2 | ✅ | ✅ |
-| **OpenAI** | GPT-4o / GPT-4o-mini | ✅ | ✅ |
-| **Anthropic** | Claude 3.5 Sonnet / Haiku | ✅ | ✅ |
+| **MiMo** | Xiaomi MiMo-V2.5-Pro / V2.5 | ✅ | ✅ |
+| **OpenAI** | GPT-5.5 / GPT-5.5-mini | ✅ | ✅ |
+| **Anthropic** | Claude Sonnet 4.6 / Opus 4.7 | ✅ | ✅ |
+| **Google** | Gemini 3.1 Pro | ✅ | ✅ |
+| **Alibaba** | Qwen 3 Coder 32B | ✅ | ✅ |
 
 ---
 

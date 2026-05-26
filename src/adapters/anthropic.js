@@ -1,6 +1,6 @@
 /**
  * Anthropic Adapter
- * Interface for Claude 3.5 Sonnet / Haiku API.
+ * Interface for Claude Sonnet 4.6 / Opus 4.7 API.
  */
 
 class AnthropicAdapter {
@@ -8,7 +8,7 @@ class AnthropicAdapter {
     this.name = 'anthropic';
     this.baseUrl = opts.baseUrl || 'https://api.anthropic.com/v1';
     this.apiKey = opts.apiKey || process.env.ANTHROPIC_API_KEY || '';
-    this.model = opts.model || 'claude-3-5-sonnet';
+    this.model = opts.model || 'claude-sonnet-4.6';
     this.streaming = opts.streaming !== false;
   }
 
@@ -39,8 +39,8 @@ class AnthropicAdapter {
    * @returns {number} Estimated cost in USD.
    */
   calculateCost(inputTokens, outputTokens) {
-    const inputRate = 0.000003;   // $3 per 1M input tokens (Claude 3.5)
-    const outputRate = 0.000015;  // $15 per 1M output tokens (Claude 3.5)
+    const inputRate = 0.000003;   // $3 per 1M input tokens (Sonnet 4.6)
+    const outputRate = 0.000015;  // $15 per 1M output tokens (Sonnet 4.6)
     return inputTokens * inputRate + outputTokens * outputRate;
   }
 

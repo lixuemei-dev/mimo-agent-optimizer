@@ -1,6 +1,6 @@
 /**
  * OpenAI Adapter
- * Interface for OpenAI GPT-4o / GPT-4o-mini API.
+ * Interface for OpenAI GPT-5.5 / GPT-5.5-mini API.
  */
 
 class OpenAIAdapter {
@@ -8,7 +8,7 @@ class OpenAIAdapter {
     this.name = 'openai';
     this.baseUrl = opts.baseUrl || 'https://api.openai.com/v1';
     this.apiKey = opts.apiKey || process.env.OPENAI_API_KEY || '';
-    this.model = opts.model || 'gpt-4o';
+    this.model = opts.model || 'gpt-5.5';
     this.streaming = opts.streaming !== false;
   }
 
@@ -36,8 +36,8 @@ class OpenAIAdapter {
    * @returns {number} Estimated cost in USD.
    */
   calculateCost(inputTokens, outputTokens) {
-    const inputRate = 0.000005;   // $5 per 1M input tokens (GPT-4o)
-    const outputRate = 0.000015;  // $15 per 1M output tokens (GPT-4o)
+    const inputRate = 0.00000175; // $1.75 per 1M input tokens (GPT-5.5)
+    const outputRate = 0.000014;   // $14 per 1M output tokens (GPT-5.5)
     return inputTokens * inputRate + outputTokens * outputRate;
   }
 
