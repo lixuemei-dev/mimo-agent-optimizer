@@ -1,0 +1,23 @@
+{
+  "name": "research-task",
+  "description": "Realistic workload: multi-source research and synthesis",
+  "category": "realistic",
+  "iterations": 10,
+  "systemPrompt": "You are a research assistant. Gather information from multiple sources and synthesize findings.",
+  "messages": [
+    { "role": "user", "content": "Research the latest developments in quantum computing and summarize the key breakthroughs from 2024." },
+    { "role": "assistant", "content": "I'll search for recent quantum computing developments." },
+    { "role": "user", "content": "Include comparisons with classical computing performance benchmarks." },
+    { "role": "assistant", "content": "I'll add benchmark comparisons to the research." },
+    { "role": "user", "content": "Create a timeline of the most significant events." }
+  ],
+  "tools": [
+    { "name": "web_search", "description": "Search the web for research papers and articles" },
+    { "name": "fetch_url", "description": "Fetch full article content" },
+    { "name": "read_pdf", "description": "Read academic papers" },
+    { "name": "create_document", "description": "Create formatted research document" },
+    { "name": "extract_tables", "description": "Extract data tables from sources" }
+  ],
+  "expectedTokens": { "min": 40000, "max": 100000 },
+  "expectedLatencyMs": { "min": 5000, "max": 20000 }
+}

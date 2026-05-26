@@ -1,0 +1,42 @@
+{
+  "description": "Scoring weights for composite performance evaluation",
+  "weights": {
+    "tokens": 0.40,
+    "latency": 0.30,
+    "cost": 0.20,
+    "quality": 0.10
+  },
+  "normalizers": {
+    "tokens": {
+      "max": 200000,
+      "unit": "tokens",
+      "lowerIsBetter": true
+    },
+    "latency": {
+      "max": 30000,
+      "unit": "ms",
+      "lowerIsBetter": true
+    },
+    "cost": {
+      "max": 5.0,
+      "unit": "USD",
+      "lowerIsBetter": true
+    },
+    "quality": {
+      "max": 1.0,
+      "unit": "score",
+      "higherIsBetter": true
+    }
+  },
+  "bonuses": {
+    "streamingEnabled": -500,
+    "parallelToolsEnabled": -300,
+    "cacheEnabled": -200,
+    "deduplicationEnabled": -400
+  },
+  "penalties": {
+    "missingTimeout": 1000,
+    "excessiveToolDepth": 500,
+    "noBudgetCap": 800
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "profile": "conservative",
+  "description": "Maximum quality with higher token and cost budget",
+  "model": "mimo-v2",
+  "maxTokens": 200000,
+  "maxContextTokens": 128000,
+  "temperature": 0.8,
+  "maxToolOutputTokens": 4096,
+  "maxToolCallDepth": 10,
+  "deduplicateToolResults": false,
+  "compressSystemPrompt": false,
+  "streaming": true,
+  "parallelToolCalls": false,
+  "maxParallelTools": 1,
+  "cacheEnabled": false,
+  "cacheTtlMs": 0,
+  "promptCaching": false,
+  "maxCostPerSessionUsd": 10.0,
+  "timeoutMs": 30000,
+  "systemPrompt": "You are an expert AI assistant. Provide comprehensive, detailed, and accurate responses. Use all available tools to gather information before answering. Take time to think through complex problems step by step. Always cite sources when possible."
+}

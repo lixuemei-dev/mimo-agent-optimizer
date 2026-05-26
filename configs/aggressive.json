@@ -1,0 +1,21 @@
+{
+  "profile": "aggressive",
+  "description": "Maximum token savings with acceptable quality trade-off",
+  "model": "mimo-v2",
+  "maxTokens": 50000,
+  "maxContextTokens": 60000,
+  "temperature": 0.5,
+  "maxToolOutputTokens": 1000,
+  "maxToolCallDepth": 3,
+  "deduplicateToolResults": true,
+  "compressSystemPrompt": true,
+  "streaming": true,
+  "parallelToolCalls": true,
+  "maxParallelTools": 4,
+  "cacheEnabled": true,
+  "cacheTtlMs": 120000,
+  "promptCaching": true,
+  "maxCostPerSessionUsd": 1.0,
+  "timeoutMs": 5000,
+  "systemPrompt": "You are a helpful assistant. Be concise. Use tools when needed."
+}

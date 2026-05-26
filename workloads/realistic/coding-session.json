@@ -1,0 +1,23 @@
+{
+  "name": "coding-session",
+  "description": "Realistic workload: code review and refactoring session",
+  "category": "realistic",
+  "iterations": 10,
+  "systemPrompt": "You are a senior software engineer helping with code review and refactoring.",
+  "messages": [
+    { "role": "user", "content": "Review this code for bugs and suggest improvements." },
+    { "role": "assistant", "content": "I'll analyze the code. Let me read the file first." },
+    { "role": "user", "content": "Also check if there are any security vulnerabilities." },
+    { "role": "assistant", "content": "I'll run a security analysis alongside the code review." },
+    { "role": "user", "content": "Refactor the identified issues and write the fixed version." }
+  ],
+  "tools": [
+    { "name": "read_file", "description": "Read source code files" },
+    { "name": "write_file", "description": "Write modified source code" },
+    { "name": "run_tests", "description": "Execute test suite" },
+    { "name": "search_code", "description": "Search codebase for patterns" },
+    { "name": "lint_code", "description": "Run linter checks" }
+  ],
+  "expectedTokens": { "min": 30000, "max": 80000 },
+  "expectedLatencyMs": { "min": 3000, "max": 15000 }
+}

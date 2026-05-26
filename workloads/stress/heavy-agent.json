@@ -1,0 +1,22 @@
+{
+  "name": "heavy-agent",
+  "description": "Stress test: agent performing 20+ sequential tool calls with large context",
+  "category": "stress",
+  "iterations": 1,
+  "systemPrompt": "You are a research agent. Analyze the following data thoroughly and provide detailed insights.",
+  "messages": [
+    { "role": "user", "content": "Perform a comprehensive analysis of the provided dataset using all available tools." }
+  ],
+  "tools": [
+    { "name": "search", "description": "Search the web" },
+    { "name": "read_file", "description": "Read file contents" },
+    { "name": "write_file", "description": "Write file contents" },
+    { "name": "execute_code", "description": "Execute code snippets" },
+    { "name": "browse_page", "description": "Browse and extract web content" },
+    { "name": "database_query", "description": "Query databases" },
+    { "name": "image_analyze", "description": "Analyze images" },
+    { "name": "send_email", "description": "Send email notifications" }
+  ],
+  "expectedTokens": { "min": 80000, "max": 200000 },
+  "expectedLatencyMs": { "min": 10000, "max": 60000 }
+}

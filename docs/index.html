@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiMo Agent Auto-Optimizer</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:#e0e0e0;--muted:#6b7280;--g1:#10b981;--g2:#06b6d4;--glow:rgba(16,185,129,.15)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+
+/* Particle canvas */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* Navbar */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(10,10,15,.8);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 4px 30px rgba(0,0,0,.5)}
+.nav-brand{font-size:1.25rem;font-weight:700;background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav-links a:hover{color:var(--g1)}
+.btn-github{border:1px solid var(--g1);padding:.4rem 1rem;border-radius:8px;color:var(--g1)!important;transition:all .2s}
+.btn-github:hover{background:var(--glow);box-shadow:0 0 20px rgba(16,185,129,.3)}
+
+/* Hero */
+.hero{position:relative;z-index:1;text-align:center;padding:8rem 2rem 4rem;max-width:800px;margin:0 auto}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:800;background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:1rem}
+.hero .subtitle{font-size:1.15rem;color:var(--muted);max-width:600px;margin:0 auto 2rem}
+.stats-row{display:flex;justify-content:center;gap:3rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-size:2rem;font-weight:700;color:var(--g1)}
+.stat .label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hero-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#000;padding:.75rem 2rem;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(16,185,129,.4)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);padding:.75rem 2rem;border-radius:10px;font-size:1rem;cursor:pointer;transition:all .3s}
+.btn-outline:hover{border-color:var(--g1);box-shadow:0 0 20px var(--glow)}
+
+/* Sections */
+section{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:5rem 2rem}
+.section-title{text-align:center;font-size:2rem;font-weight:700;margin-bottom:.5rem;background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{text-align:center;color:var(--muted);margin-bottom:3rem}
+
+/* Cards */
+.card-grid{display:grid;gap:1.5rem}
+.card-grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card-grid.cols-5{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:all .3s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--g1);box-shadow:0 0 30px var(--glow);transform:translateY(-3px)}
+.card-icon{font-size:2rem;margin-bottom:.75rem}
+.card h3{font-size:1.1rem;font-weight:600;margin-bottom:.5rem;color:#fff}
+.card p{font-size:.9rem;color:var(--muted);line-height:1.5}
+
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;text-align:center}
+@media(max-width:768px){.steps{grid-template-columns:repeat(2,1fr)}}
+.step{position:relative;padding:1.5rem 1rem}
+.step-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));color:#000;font-weight:700;font-size:1.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem}
+.step h4{font-size:.95rem;margin-bottom:.25rem}
+.step p{font-size:.8rem;color:var(--muted)}
+
+/* Architecture */
+.arch-box{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:16px;padding:2rem;overflow-x:auto}
+.arch-box pre{color:var(--g1);font-family:'Fira Code',monospace;font-size:.85rem;line-height:1.8}
+
+/* Terminal */
+.terminal{background:#000;border:1px solid var(--border);border-radius:12px;max-width:700px;margin:0 auto;overflow:hidden}
+.terminal-bar{background:rgba(255,255,255,.06);padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem}
+.terminal-dot{width:12px;height:12px;border-radius:50%}
+.terminal-dot.r{background:#ff5f57}.terminal-dot.y{background:#febc2e}.terminal-dot.g{background:#28c840}
+.terminal-body{padding:1.25rem 1.5rem;font-family:'Fira Code',monospace;font-size:.85rem;line-height:1.7;min-height:200px}
+.terminal-body .line{opacity:0;animation:fadeUp .4s ease forwards}
+.terminal-body .prompt{color:var(--g1)}
+.terminal-body .cmd{color:#e0e0e0}
+.terminal-body .out{color:var(--muted)}
+.terminal-body .ok{color:var(--g1)}
+.terminal-body .hi{color:var(--g2)}
+
+/* Big stats */
+.big-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center;padding:3rem 0}
+@media(max-width:600px){.big-stats{grid-template-columns:repeat(2,1fr)}}
+.big-stat .val{font-size:clamp(2rem,4vw,3rem);font-weight:800;background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.big-stat .desc{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.1));border:1px solid var(--border);border-radius:20px;padding:3rem;text-align:center}
+.cta-box h2{font-size:1.75rem;font-weight:700;margin-bottom:1rem}
+.cta-cmd{background:#000;border:1px solid var(--border);border-radius:10px;padding:.75rem 1.5rem;font-family:'Fira Code',monospace;font-size:.9rem;display:inline-block;margin:1rem 0;color:var(--g1)}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Animations */
+@keyframes fadeUp{to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* Footer */
+footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+footer a{color:var(--g1);text-decoration:none}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <div class="nav-brand">⚡ MiMo Agent Optimizer</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#quick-start">Quick Start</a>
+    <a href="https://github.com/mimo-optimizer/mimo-agent-optimizer" class="btn-github" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>MiMo Agent Auto-Optimizer</h1>
+  <p class="subtitle">Auto-tune MiMo agent configurations for optimal token efficiency, latency, and cost. Stop wasting tokens on default configs.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="num">40+</div><div class="label">Files</div></div>
+    <div class="stat"><div class="num">3500+</div><div class="label">Lines</div></div>
+    <div class="stat"><div class="num">15+</div><div class="label">Tests</div></div>
+  </div>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('quick-start').scrollIntoView()">Get Started</button>
+    <button class="btn-outline" onclick="window.open('https://github.com/mimo-optimizer/mimo-agent-optimizer')">View on GitHub</button>
+  </div>
+</section>
+
+<!-- Pain Points -->
+<section id="features">
+  <h2 class="section-title reveal">Why Optimize?</h2>
+  <p class="section-sub reveal">Default configurations silently drain your token budget</p>
+  <div class="card-grid cols-5 reveal">
+    <div class="card">
+      <div class="card-icon">💸</div>
+      <h3>Token Waste</h3>
+      <p>Default configs use verbose prompts and redundant context, burning tokens on every call.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🐌</div>
+      <h3>Hidden Latency</h3>
+      <p>Multi-step pipelines accumulate hidden latency that only surfaces under production load.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <h3>Cost Spirals</h3>
+      <p>Without per-session tracking, token costs grow silently until the bill arrives.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⏱️</div>
+      <h3>Manual Tuning</h3>
+      <p>Engineers spend days tweaking parameters with no systematic methodology.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h3>No A/B Testing</h3>
+      <p>Config changes deploy without statistical validation, leading to regressions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works">
+  <h2 class="section-title reveal">How It Works</h2>
+  <p class="section-sub reveal">Five-step pipeline from profiling to report</p>
+  <div class="steps reveal">
+    <div class="step"><div class="step-num">1</div><h4>Profile</h4><p>Run workloads, collect baseline metrics</p></div>
+    <div class="step"><div class="step-num">2</div><h4>Analyze</h4><p>Find bottlenecks & token waste</p></div>
+    <div class="step"><div class="step-num">3</div><h4>Optimize</h4><p>Apply strategies iteratively</p></div>
+    <div class="step"><div class="step-num">4</div><h4>Validate</h4><p>A/B test results statistically</p></div>
+    <div class="step"><div class="step-num">5</div><h4>Report</h4><p>Generate console/JSON/HTML output</p></div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section>
+  <h2 class="section-title reveal">Architecture</h2>
+  <p class="section-sub reveal">Modular pipeline with pluggable strategies and adapters</p>
+  <div class="arch-box reveal">
+<pre>
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Profile   │────▶│   Analyze   │────▶│  Optimize   │────▶│  Validate   │────▶│   Report    │
+│             │     │             │     │             │     │             │     │             │
+│ Run workload │     │ Find        │     │ Apply       │     │ A/B test    │     │ Generate    │
+│ collect      │     │ bottlenecks │     │ strategies  │     │ results     │     │ summary     │
+│ metrics      │     │ &amp; waste    │     │ to config   │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+
+  Adapters:  [MiMo]  [OpenAI]  [Anthropic]
+  Strategies:  [Token Budget]  [Latency Tuning]  [Cost Control]
+  Analyzers:  [BottleneckDetector]  [RecommendationEngine]
+  Reporters:  [Console]  [JSON]  [HTML]
+</pre>
+  </div>
+</section>
+
+<!-- Strategies -->
+<section>
+  <h2 class="section-title reveal">Optimization Strategies</h2>
+  <p class="section-sub reveal">Choose the right strategy for your use case</p>
+  <div class="card-grid cols-3 reveal">
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h3>Token Budget</h3>
+      <p>Trim context windows, compress prompts, and deduplicate tool results. Targets 30–50% token reduction with minimal quality loss.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>Latency Tuning</h3>
+      <p>Enable streaming, parallel tool dispatch, and reduce max tokens. Focuses on time-to-first-token and total completion time.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>Cost Control</h3>
+      <p>Model tiering, response caching, and per-session budget caps. Keeps monthly costs within defined thresholds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Terminal Demo -->
+<section>
+  <h2 class="section-title reveal">See It In Action</h2>
+  <p class="section-sub reveal">Run the optimizer in seconds</p>
+  <div class="terminal reveal" id="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div>
+      <div class="terminal-dot y"></div>
+      <div class="terminal-dot g"></div>
+    </div>
+    <div class="terminal-body" id="terminal-body"></div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section>
+  <div class="big-stats reveal">
+    <div class="big-stat"><div class="val">35%</div><div class="desc">Token Reduction</div></div>
+    <div class="big-stat"><div class="val">3</div><div class="desc">Provider Adapters</div></div>
+    <div class="big-stat"><div class="val">6</div><div class="desc">Workload Types</div></div>
+    <div class="big-stat"><div class="val">3</div><div class="desc">Config Profiles</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="quick-start">
+  <div class="cta-box reveal">
+    <h2>Start Optimizing Today</h2>
+    <p style="color:var(--muted);margin-bottom:1rem">Clone, install, and run in three commands</p>
+    <div class="cta-cmd">git clone https://github.com/mimo-optimizer/mimo-agent-optimizer && cd mimo-agent-optimizer && npm install && node scripts/run.js</div>
+    <p style="margin-top:1.5rem"><a href="https://github.com/mimo-optimizer/mimo-agent-optimizer" target="_blank" style="color:var(--g1)">View full documentation on GitHub →</a></p>
+  </div>
+</section>
+
+<footer>
+  <p>MiMo Agent Auto-Optimizer v1.0.0 · <a href="https://github.com/mimo-optimizer/mimo-agent-optimizer">GitHub</a> · MIT License</p>
+</footer>
+
+<script>
+// Particle background
+(function(){
+  const c=document.getElementById('particles'),x=c.getContext('2d');
+  let w,h,pts=[];
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight;pts=[];for(let i=0;i<60;i++)pts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+1})}
+  function draw(){x.clearRect(0,0,w,h);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle='rgba(16,185,129,.3)';x.fill()});
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);if(d<150){x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(pts[j].x,pts[j].y);x.strokeStyle=`rgba(16,185,129,${.15*(1-d/150)})`;x.stroke()}}
+  requestAnimationFrame(draw)}
+  resize();draw();addEventListener('resize',resize)
+})();
+
+// Navbar scroll
+window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',scrollY>50)});
+
+// Scroll reveal
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Terminal animation
+(function(){
+  const lines=[
+    {type:'prompt',text:'$ '},
+    {type:'cmd',text:'node scripts/run.js --config balanced --strategy token-budget'},
+    {type:'out',text:''},
+    {type:'out',text:'═══════════════════════════════════════════════════════'},
+    {type:'hi',text:'  MiMo Agent Auto-Optimizer'},
+    {type:'out',text:'═══════════════════════════════════════════════════════'},
+    {type:'out',text:''},
+    {type:'out',text:'⏳ Config: ./configs/balanced.json'},
+    {type:'out',text:'⏳ Strategy: token-budget'},
+    {type:'out',text:'⏳ Iterations: 3'},
+    {type:'out',text:''},
+    {type:'ok',text:'✓ Improvement: 35.2%'},
+    {type:'out',text:''},
+    {type:'out',text:'Baseline Metrics:'},
+    {type:'out',text:'  Tokens:    120,000'},
+    {type:'out',text:'  Latency:   4,200ms'},
+    {type:'out',text:'  Cost:      $0.6000'},
+    {type:'out',text:''},
+    {type:'out',text:'Optimized Metrics:'},
+    {type:'out',text:'  Tokens:    77,800'},
+    {type:'out',text:'  Latency:   2,800ms'},
+    {type:'out',text:'  Cost:      $0.3890'},
+    {type:'out',text:''},
+    {type:'ok',text:'✅ Optimization complete in 1,847ms'},
+  ];
+  const el=document.getElementById('terminal-body');
+  const obs2=new IntersectionObserver(es=>{if(es[0].isIntersecting){obs2.disconnect();let i=0;function add(){if(i>=lines.length)return;const d=document.createElement('div');d.className='line';d.style.animationDelay=`${i*.12}s`;
+    if(lines[i].type==='prompt'){d.innerHTML=`<span class="prompt">${lines[i].text}</span>`}
+    else if(lines[i].type==='cmd'){d.innerHTML=`<span class="cmd">${lines[i].text}</span>`}
+    else if(lines[i].type==='ok'){d.innerHTML=`<span class="ok">${lines[i].text}</span>`}
+    else if(lines[i].type==='hi'){d.innerHTML=`<span class="hi">${lines[i].text}</span>`}
+    else{d.innerHTML=`<span class="out">${lines[i].text}</span>`}
+    el.appendChild(d);i++;setTimeout(add,lines[i-1].text?120:40)}
+    add()}},{threshold:.3});
+  obs2.observe(document.getElementById('terminal'));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "gpt4o-baseline",
+  "description": "Reference baseline for GPT-4o performance metrics",
+  "category": "reference",
+  "iterations": 20,
+  "provider": "openai",
+  "model": "gpt-4o",
+  "systemPrompt": "You are a helpful assistant.",
+  "messages": [
+    { "role": "user", "content": "Explain the concept of recursion in programming with examples." }
+  ],
+  "tools": [],
+  "expectedMetrics": {
+    "inputTokens": 25,
+    "outputTokens": 500,
+    "latencyMs": 2000,
+    "costPer1MInput": 5.0,
+    "costPer1MOutput": 15.0
+  }
+}

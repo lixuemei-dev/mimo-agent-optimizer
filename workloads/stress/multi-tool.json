@@ -1,0 +1,21 @@
+{
+  "name": "multi-tool",
+  "description": "Stress test: rapid parallel tool calls with streaming responses",
+  "category": "stress",
+  "iterations": 5,
+  "systemPrompt": "You are a multi-tool agent. Execute all requested operations simultaneously.",
+  "messages": [
+    { "role": "user", "content": "Search for recent news, read the top 3 results, extract key data, compare with database records, and generate a summary report." }
+  ],
+  "tools": [
+    { "name": "web_search", "description": "Search the web for information" },
+    { "name": "fetch_url", "description": "Fetch and parse URL content" },
+    { "name": "db_read", "description": "Read from database" },
+    { "name": "db_write", "description": "Write to database" },
+    { "name": "generate_report", "description": "Generate formatted report" },
+    { "name": "send_notification", "description": "Send push notification" }
+  ],
+  "concurrency": 6,
+  "expectedTokens": { "min": 50000, "max": 150000 },
+  "expectedLatencyMs": { "min": 5000, "max": 30000 }
+}

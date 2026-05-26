@@ -1,0 +1,18 @@
+{
+  "name": "mimo-agent-optimizer",
+  "version": "1.0.0",
+  "description": "Auto-tune MiMo agent configurations for optimal token efficiency, latency, and cost.",
+  "main": "src/index.js",
+  "bin": { "mimo-optimize": "src/cli.js" },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test tests/**/*.test.js",
+    "optimize": "node scripts/run.js",
+    "validate": "node scripts/validate.js",
+    "compare": "node scripts/compare.js"
+  },
+  "keywords": ["mimo", "optimizer", "agent", "llm", "xiaomi", "auto-tune"],
+  "author": "MiMo Optimizer Contributors",
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" }
+}

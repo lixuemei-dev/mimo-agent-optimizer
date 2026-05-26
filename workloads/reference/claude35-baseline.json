@@ -1,0 +1,20 @@
+{
+  "name": "claude35-baseline",
+  "description": "Reference baseline for Claude 3.5 Sonnet performance metrics",
+  "category": "reference",
+  "iterations": 20,
+  "provider": "anthropic",
+  "model": "claude-3-5-sonnet",
+  "systemPrompt": "You are a helpful assistant.",
+  "messages": [
+    { "role": "user", "content": "Explain the concept of recursion in programming with examples." }
+  ],
+  "tools": [],
+  "expectedMetrics": {
+    "inputTokens": 25,
+    "outputTokens": 500,
+    "latencyMs": 1800,
+    "costPer1MInput": 3.0,
+    "costPer1MOutput": 15.0
+  }
+}

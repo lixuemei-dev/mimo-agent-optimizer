@@ -1,0 +1,16 @@
+{
+  "profile": "test",
+  "model": "mimo-v2",
+  "maxTokens": 80000,
+  "maxContextTokens": 64000,
+  "temperature": 0.7,
+  "maxToolOutputTokens": 2000,
+  "maxToolCallDepth": 5,
+  "deduplicateToolResults": false,
+  "streaming": false,
+  "parallelToolCalls": false,
+  "cacheEnabled": false,
+  "maxCostPerSessionUsd": 5.0,
+  "timeoutMs": 15000,
+  "systemPrompt": "You are a test assistant. Keep responses minimal for testing purposes."
+}
