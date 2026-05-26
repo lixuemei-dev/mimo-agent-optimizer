@@ -99,6 +99,11 @@ section{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:5rem 
 /* Footer */
 footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
 footer a{color:var(--g1);text-decoration:none}
+
+/* Scroll hint */
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.8rem;letter-spacing:1px;animation:bounce 2s infinite}
+.scroll-hint svg{opacity:.6}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 </style>
 </head>
 <body>
@@ -128,6 +133,10 @@ footer a{color:var(--g1);text-decoration:none}
   <div class="hero-btns">
     <button class="btn-primary" onclick="document.getElementById('quick-start').scrollIntoView()">Get Started</button>
     <button class="btn-outline" onclick="window.open('https://github.com/lixuemei-dev/mimo-agent-optimizer')">View on GitHub</button>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
   </div>
 </section>
 
